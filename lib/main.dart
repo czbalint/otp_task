@@ -1,24 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:otp/Bloc/feedback_cubit.dart';
+import 'package:otp/Bloc/store_bloc.dart';
 import 'package:otp/UI/Pages/first_page.dart';
 import 'package:otp/UI/Pages/second_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
 
-  // This widget is the root of your application.
+  final FeedBackCubit storeBloc = FeedBackCubit();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'OTP Task',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<StoreBloc>(
+          create: (context) => StoreBloc(storeBloc),
+        ),
+        BlocProvider<FeedBackCubit>(
+          create: (context) => storeBloc,
+        ),
+      ],
+      child: MaterialApp(
+          title: 'OTP Task',
+          theme: ThemeData(
+            primarySwatch: Colors.green,
+          ),
+          home: const MyHomePage(),
+        ),
+      );
   }
 }
 
@@ -34,13 +48,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   
   @override
   void initState() {
-    tabController = TabController(length: 2, vsync: this);
     super.initState();
+    tabController = TabController(length: 2, vsync: this);
+    tabController.addListener(() {
+      context.read<FeedBackCubit>().clearWords();
+    });
   }
   
   @override
   Widget build(BuildContext context) {
-    final _pcolor = Theme.of(context).primaryColor;
+    final color = Theme.of(context).primaryColor;
 
     return Scaffold(
       bottomNavigationBar: BottomAppBar(
@@ -48,10 +65,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             controller: tabController,
             tabs: <Widget> [
               Tab(
-                icon: Icon(Icons.input, color: _pcolor),
+                icon: Icon(Icons.input, color: color),
               ),
               Tab(
-                icon: Icon(Icons.credit_score, color: _pcolor),
+                icon: Icon(Icons.credit_score, color: color),
               )
             ]
         ),
@@ -59,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       body: SafeArea(
         child: TabBarView(
           controller: tabController,
-          children: <Widget> [
+          children: const <Widget> [
             FirstPage(),
             SecondPage()
           ]
