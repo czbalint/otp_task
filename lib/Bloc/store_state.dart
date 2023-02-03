@@ -17,12 +17,7 @@ class StoreBlocRefreshWords extends StoreBlocState {
   const StoreBlocRefreshWords(this.words, this.point, this.newWord);
 
   @override
-  List<Object?> get props => [words, point];
-}
-
-class StoreBlocExsistWord extends StoreBlocState {
-  @override
-  List<Object?> get props => [];
+  List<Object?> get props => [words, point, newWord];
 }
 
 class StoreBlocLoading extends StoreBlocState {
